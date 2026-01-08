@@ -35,6 +35,20 @@ pip install selenium webdriver-manager python-dotenv pytrends requests beautiful
 
 Đảm bảo Microsoft Edge đã được cài đặt và cập nhật lên phiên bản mới nhất.
 
+### 4. Kiểm tra cài đặt (Tùy chọn nhưng khuyến nghị)
+
+Chạy script kiểm tra để đảm bảo mọi thứ đã sẵn sàng:
+
+```bash
+python check_edgedriver.py
+```
+
+Script này sẽ kiểm tra và báo cáo tình trạng:
+- Microsoft Edge đã cài đặt
+- EdgeDriver đã có và tương thích
+- Kết nối internet
+- Selenium hoạt động
+
 ## 📖 Cách sử dụng
 
 ### Chạy với cấu hình mặc định
@@ -122,12 +136,29 @@ Chỉnh sửa file `keywords.json` để thêm/bớt từ khóa:
 ```
 tools_automation_search/
 ├── edge_search_automation.py  # Script chính
+├── check_edgedriver.py        # Script kiểm tra EdgeDriver
+├── install_edgedriver.py      # Script cài đặt EdgeDriver
 ├── keywords.json              # File chứa từ khóa
-├── requirements.txt           # Danh sách thư viện
+├── requirements.txt            # Danh sách thư viện
 └── README.md                  # Hướng dẫn sử dụng
 ```
 
 ## 🔧 Troubleshooting
+
+### Kiểm tra cài đặt (Khuyến nghị đầu tiên!)
+
+Trước khi chạy script chính, hãy kiểm tra môi trường:
+
+```bash
+python check_edgedriver.py
+```
+
+Script này sẽ kiểm tra:
+- ✓ Microsoft Edge đã được cài đặt chưa
+- ✓ EdgeDriver đã có chưa và ở đâu
+- ✓ Phiên bản Edge và EdgeDriver có tương thích không
+- ✓ Kết nối internet
+- ✓ Selenium có hoạt động không
 
 ### Lỗi: "EdgeDriver not found" hoặc "Unable to obtain driver"
 

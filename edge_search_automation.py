@@ -475,10 +475,12 @@ class EdgeSearchAutomation:
         if not driver_initialized:
             try:
                 print("Phuong phap 2: Thu su dung Selenium Manager...")
-                service = Service()  # Selenium sẽ tự động tìm driver
-                # Test thử khởi tạo
-                test_driver = webdriver.Edge(service=service, options=edge_options)
+                # Test thử khởi tạo (không dùng service cũ)
+                test_service = Service()  # Selenium sẽ tự động tìm driver
+                test_driver = webdriver.Edge(service=test_service, options=edge_options)
                 test_driver.quit()
+                # Tạo service mới cho driver thực sự
+                service = Service()
                 print("✓ Selenium Manager hoat dong")
                 driver_initialized = True
             except Exception as e:
@@ -489,33 +491,42 @@ class EdgeSearchAutomation:
         if not driver_initialized:
             try:
                 print("Phuong phap 3: Tim EdgeDriver trong he thong...")
-                possible_paths = [
-                    os.path.join(os.environ.get('PROGRAMFILES', ''), 'Microsoft', 'Edge', 'Application', 'msedgedriver.exe'),
-                    os.path.join(os.environ.get('PROGRAMFILES(X86)', ''), 'Microsoft', 'Edge', 'Application', 'msedgedriver.exe'),
-                    os.path.join(os.path.expanduser('~'), '.wdm', 'drivers', 'edgedriver', '*', 'msedgedriver.exe'),
-                    'msedgedriver.exe',  # Trong PATH
-                ]
-                
                 import glob
-                for path_pattern in possible_paths:
-                    if '*' in path_pattern:
-                        matches = glob.glob(path_pattern)
-                        if matches:
-                            driver_path = matches[0]
-                            if os.path.exists(driver_path):
-                                service = Service(driver_path)
-                                print(f"✓ Tim thay EdgeDriver tai: {driver_path}")
+                
+                # Tìm trong thư mục hiện tại trước
+                current_dir_driver = os.path.join(os.getcwd(), 'msedgedriver.exe')
+                if os.path.exists(current_dir_driver):
+                    service = Service(current_dir_driver)
+                    print(f"✓ Tim thay EdgeDriver trong thu muc hien tai: {current_dir_driver}")
+                    driver_initialized = True
+                else:
+                    possible_paths = [
+                        os.path.join(os.environ.get('PROGRAMFILES', ''), 'Microsoft', 'Edge', 'Application', 'msedgedriver.exe'),
+                        os.path.join(os.environ.get('PROGRAMFILES(X86)', ''), 'Microsoft', 'Edge', 'Application', 'msedgedriver.exe'),
+                        os.path.join(os.path.expanduser('~'), '.wdm', 'drivers', 'edgedriver', '*', 'msedgedriver.exe'),
+                        'msedgedriver.exe',  # Trong PATH
+                    ]
+                    
+                    for path_pattern in possible_paths:
+                        if '*' in path_pattern:
+                            matches = glob.glob(path_pattern)
+                            if matches:
+                                driver_path = matches[0]
+                                if os.path.exists(driver_path):
+                                    service = Service(driver_path)
+                                    print(f"✓ Tim thay EdgeDriver tai: {driver_path}")
+                                    driver_initialized = True
+                                    break
+                        else:
+                            if os.path.exists(path_pattern):
+                                service = Service(path_pattern)
+                                print(f"✓ Tim thay EdgeDriver tai: {path_pattern}")
                                 driver_initialized = True
                                 break
-                    else:
-                        if os.path.exists(path_pattern):
-                            service = Service(path_pattern)
-                            print(f"✓ Tim thay EdgeDriver tai: {path_pattern}")
-                            driver_initialized = True
-                            break
                 
                 if not driver_initialized:
                     print("✗ Khong tim thay EdgeDriver trong he thong")
+                    print("  → Ban co the tai thu cong bang: python install_edgedriver.py")
             except Exception as e:
                 print(f"✗ Phuong phap 3 that bai: {e}")
         
@@ -523,14 +534,16 @@ class EdgeSearchAutomation:
         if not driver_initialized:
             try:
                 print("Phuong phap 4: Thu khoi tao khong chi dinh service...")
-                service = None  # Để Selenium tự động tìm
                 # Test thử
                 test_driver = webdriver.Edge(options=edge_options)
                 test_driver.quit()
+                # Đặt service = None để Selenium tự tìm khi khởi tạo thực sự
+                service = None
                 print("✓ Khoi tao thanh cong khong can service")
                 driver_initialized = True
             except Exception as e:
                 print(f"✗ Phuong phap 4 that bai: {e}")
+                service = None
         
         # Khởi tạo driver thực sự
         try:
@@ -552,10 +565,14 @@ class EdgeSearchAutomation:
             print("   - Neu chua co, cai dat tu: https://www.microsoft.com/edge")
             print()
             print("2. Tai EdgeDriver thu cong:")
+            print("   CACH NHANH: Chay script helper:")
+            print("   → python install_edgedriver.py")
+            print()
+            print("   HOAC tai thu cong:")
             print("   - Vao: https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/")
             print("   - Tai dung phien ban EdgeDriver phu hop voi Edge cua ban")
             print("   - Giai nen va dat msedgedriver.exe vao:")
-            print("     * Cung thu muc voi script nay")
+            print("     * Cung thu muc voi script nay (KHUYEN NGHI)")
             print("     * Hoac vao thu muc trong PATH (vi du: C:\\Windows\\System32)")
             print()
             print("3. Kiem tra ket noi internet:")
